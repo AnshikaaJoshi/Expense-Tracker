@@ -1,0 +1,28 @@
+kind = "web"
+previewPath = "/"
+title = "MERN Auth Starter"
+description = "A full-stack sign-up and login app with a React frontend, Express API, and MongoDB-backed accounts."
+version = "1.0.0"
+id = "artifacts/mern-auth"
+router = "path"
+
+[[services]]
+name = "web"
+paths = [ "/" ]
+localPort = 19810
+
+[services.development]
+run = "pnpm --filter @workspace/mern-auth run dev"
+
+[services.production]
+build = [ "pnpm", "--filter", "@workspace/mern-auth", "run", "build" ]
+serve = "static"
+publicDir = "artifacts/mern-auth/dist/public"
+
+[[services.production.rewrites]]
+from = "/*"
+to = "/index.html"
+
+[services.env]
+PORT = "19810"
+BASE_PATH = "/"

@@ -24,7 +24,51 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/HealthStatus"
+  /profile:
+    get:
+      operationId: getMyProfile
+      tags: [profile]
+      summary: Get or initialize the signed-in user's profile
+      security:
+        - clerkSessionCookie: []
+      responses:
+        "200":
+          description: User profile
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserProfile"
+        "401":
+          description: Authentication required
+    put:
+      operationId: updateMyProfile
+      tags: [profile]
+      summary: Update the signed-in user's profile
+      security:
+        - clerkSessionCookie: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ProfileInput"
+      responses:
+        "200":
+          description: Updated user profile
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserProfile"
+        "400":
+          description: Invalid profile data
+        "401":
+          description: Authentication required
 components:
+  securitySchemes:
+    clerkSessionCookie:
+      type: apiKey
+      in: cookie
+      name: __session
   schemas:
     HealthStatus:
       type: object
@@ -33,4 +77,32 @@ components:
           type: string
       required:
         - status
+    UserProfile:
+      type: object
+      properties:
+        id:
+          type: string
+        displayName:
+          type: string
+          maxLength: 80
+        bio:
+          type: string
+          maxLength: 240
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+      required: [id, displayName, bio, createdAt, updatedAt]
+    ProfileInput:
+      type: object
+      properties:
+        displayName:
+          type: string
+          maxLength: 80
+        bio:
+          type: string
+          maxLength: 240
+      required: [displayName, bio]
 
