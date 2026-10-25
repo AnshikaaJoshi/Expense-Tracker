@@ -1,0 +1,28 @@
+kind = "web"
+previewPath = "/expense-tracker/"
+title = "Expense Tracker"
+description = "A full-stack personal expense tracker with a Clerk-authenticated React interface, Express API, MongoDB-backed expense records, CRUD management, and interactive spending charts."
+version = "1.0.0"
+id = "artifacts/expense-tracker"
+router = "path"
+
+[[services]]
+name = "web"
+paths = [ "/expense-tracker/" ]
+localPort = 25762
+
+[services.development]
+run = "pnpm --filter @workspace/expense-tracker run dev"
+
+[services.production]
+build = [ "pnpm", "--filter", "@workspace/expense-tracker", "run", "build" ]
+serve = "static"
+publicDir = "artifacts/expense-tracker/dist/public"
+
+[[services.production.rewrites]]
+from = "/*"
+to = "/index.html"
+
+[services.env]
+PORT = "25762"
+BASE_PATH = "/expense-tracker/"

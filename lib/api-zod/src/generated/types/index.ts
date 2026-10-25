@@ -6,6 +6,14 @@
  * OpenAPI spec version: 0.1.0
  */
 
+export * from './categoryExpenseTotal';
+export * from './expense';
+export * from './expenseCategory';
+export * from './expenseInput';
+export * from './expenseSummary';
+export * from './getExpenseSummaryParams';
 export * from './healthStatus';
+export * from './listExpensesParams';
+export * from './monthlyExpenseTotal';
 export * from './profileInput';
 export * from './userProfile';

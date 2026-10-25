@@ -64,3 +64,202 @@ export const UpdateMyProfileResponse = zod.object({
 })
 
 
+/**
+ * @summary List the signed-in user's expenses
+ */
+export const listExpensesQueryFromRegExp = new RegExp('^[0-9]{4}-[0-9]{2}-[0-9]{2}$');
+export const listExpensesQueryToRegExp = new RegExp('^[0-9]{4}-[0-9]{2}-[0-9]{2}$');
+export const listExpensesQuerySearchMax = 100;
+
+
+
+export const ListExpensesQueryParams = zod.object({
+  "from": zod.coerce.string().regex(listExpensesQueryFromRegExp).optional(),
+  "to": zod.coerce.string().regex(listExpensesQueryToRegExp).optional(),
+  "category": zod.enum(['Food', 'Transport', 'Shopping', 'Bills', 'Health', 'Entertainment', 'Travel', 'Other']).optional(),
+  "search": zod.coerce.string().max(listExpensesQuerySearchMax).optional()
+})
+
+export const listExpensesResponseDescriptionMax = 120;
+
+
+export const listExpensesResponseSpentOnRegExp = new RegExp('^[0-9]{4}-[0-9]{2}-[0-9]{2}$');
+export const listExpensesResponseNotesMax = 280;
+
+
+
+export const ListExpensesResponseItem = zod.object({
+  "id": zod.string(),
+  "description": zod.string().min(1).max(listExpensesResponseDescriptionMax),
+  "amountCents": zod.number().int().min(1),
+  "category": zod.enum(['Food', 'Transport', 'Shopping', 'Bills', 'Health', 'Entertainment', 'Travel', 'Other']),
+  "spentOn": zod.string().regex(listExpensesResponseSpentOnRegExp),
+  "notes": zod.string().max(listExpensesResponseNotesMax),
+  "createdAt": zod.coerce.date(),
+  "updatedAt": zod.coerce.date()
+})
+export const ListExpensesResponse = zod.array(ListExpensesResponseItem)
+
+
+/**
+ * @summary Create an expense
+ */
+export const createExpenseBodyDescriptionMax = 120;
+
+
+export const createExpenseBodySpentOnRegExp = new RegExp('^[0-9]{4}-[0-9]{2}-[0-9]{2}$');
+export const createExpenseBodyNotesMax = 280;
+
+
+
+export const CreateExpenseBody = zod.object({
+  "description": zod.string().min(1).max(createExpenseBodyDescriptionMax),
+  "amountCents": zod.number().int().min(1),
+  "category": zod.enum(['Food', 'Transport', 'Shopping', 'Bills', 'Health', 'Entertainment', 'Travel', 'Other']),
+  "spentOn": zod.string().regex(createExpenseBodySpentOnRegExp),
+  "notes": zod.string().max(createExpenseBodyNotesMax)
+})
+
+export const createExpenseResponseDescriptionMax = 120;
+
+
+export const createExpenseResponseSpentOnRegExp = new RegExp('^[0-9]{4}-[0-9]{2}-[0-9]{2}$');
+export const createExpenseResponseNotesMax = 280;
+
+
+
+export const CreateExpenseResponse = zod.object({
+  "id": zod.string(),
+  "description": zod.string().min(1).max(createExpenseResponseDescriptionMax),
+  "amountCents": zod.number().int().min(1),
+  "category": zod.enum(['Food', 'Transport', 'Shopping', 'Bills', 'Health', 'Entertainment', 'Travel', 'Other']),
+  "spentOn": zod.string().regex(createExpenseResponseSpentOnRegExp),
+  "notes": zod.string().max(createExpenseResponseNotesMax),
+  "createdAt": zod.coerce.date(),
+  "updatedAt": zod.coerce.date()
+})
+
+
+/**
+ * @summary Summarize the signed-in user's expenses
+ */
+export const getExpenseSummaryQueryFromRegExp = new RegExp('^[0-9]{4}-[0-9]{2}-[0-9]{2}$');
+export const getExpenseSummaryQueryToRegExp = new RegExp('^[0-9]{4}-[0-9]{2}-[0-9]{2}$');
+
+
+export const GetExpenseSummaryQueryParams = zod.object({
+  "from": zod.coerce.string().regex(getExpenseSummaryQueryFromRegExp),
+  "to": zod.coerce.string().regex(getExpenseSummaryQueryToRegExp)
+})
+
+export const GetExpenseSummaryResponse = zod.object({
+  "totalCents": zod.number().int(),
+  "expenseCount": zod.number().int(),
+  "averageCents": zod.number(),
+  "byMonth": zod.array(zod.object({
+  "month": zod.string().describe('Calendar month in YYYY-MM format'),
+  "totalCents": zod.number().int()
+})),
+  "byCategory": zod.array(zod.object({
+  "category": zod.enum(['Food', 'Transport', 'Shopping', 'Bills', 'Health', 'Entertainment', 'Travel', 'Other']),
+  "totalCents": zod.number().int(),
+  "count": zod.number().int()
+}))
+})
+
+
+/**
+ * @summary Get one of the signed-in user's expenses
+ */
+export const getExpensePathIdMin = 24;
+export const getExpensePathIdMax = 24;
+
+
+
+export const GetExpenseParams = zod.object({
+  "id": zod.coerce.string().min(getExpensePathIdMin).max(getExpensePathIdMax)
+})
+
+export const getExpenseResponseDescriptionMax = 120;
+
+
+export const getExpenseResponseSpentOnRegExp = new RegExp('^[0-9]{4}-[0-9]{2}-[0-9]{2}$');
+export const getExpenseResponseNotesMax = 280;
+
+
+
+export const GetExpenseResponse = zod.object({
+  "id": zod.string(),
+  "description": zod.string().min(1).max(getExpenseResponseDescriptionMax),
+  "amountCents": zod.number().int().min(1),
+  "category": zod.enum(['Food', 'Transport', 'Shopping', 'Bills', 'Health', 'Entertainment', 'Travel', 'Other']),
+  "spentOn": zod.string().regex(getExpenseResponseSpentOnRegExp),
+  "notes": zod.string().max(getExpenseResponseNotesMax),
+  "createdAt": zod.coerce.date(),
+  "updatedAt": zod.coerce.date()
+})
+
+
+/**
+ * @summary Replace one of the signed-in user's expenses
+ */
+export const updateExpensePathIdMin = 24;
+export const updateExpensePathIdMax = 24;
+
+
+
+export const UpdateExpenseParams = zod.object({
+  "id": zod.coerce.string().min(updateExpensePathIdMin).max(updateExpensePathIdMax)
+})
+
+export const updateExpenseBodyDescriptionMax = 120;
+
+
+export const updateExpenseBodySpentOnRegExp = new RegExp('^[0-9]{4}-[0-9]{2}-[0-9]{2}$');
+export const updateExpenseBodyNotesMax = 280;
+
+
+
+export const UpdateExpenseBody = zod.object({
+  "description": zod.string().min(1).max(updateExpenseBodyDescriptionMax),
+  "amountCents": zod.number().int().min(1),
+  "category": zod.enum(['Food', 'Transport', 'Shopping', 'Bills', 'Health', 'Entertainment', 'Travel', 'Other']),
+  "spentOn": zod.string().regex(updateExpenseBodySpentOnRegExp),
+  "notes": zod.string().max(updateExpenseBodyNotesMax)
+})
+
+export const updateExpenseResponseDescriptionMax = 120;
+
+
+export const updateExpenseResponseSpentOnRegExp = new RegExp('^[0-9]{4}-[0-9]{2}-[0-9]{2}$');
+export const updateExpenseResponseNotesMax = 280;
+
+
+
+export const UpdateExpenseResponse = zod.object({
+  "id": zod.string(),
+  "description": zod.string().min(1).max(updateExpenseResponseDescriptionMax),
+  "amountCents": zod.number().int().min(1),
+  "category": zod.enum(['Food', 'Transport', 'Shopping', 'Bills', 'Health', 'Entertainment', 'Travel', 'Other']),
+  "spentOn": zod.string().regex(updateExpenseResponseSpentOnRegExp),
+  "notes": zod.string().max(updateExpenseResponseNotesMax),
+  "createdAt": zod.coerce.date(),
+  "updatedAt": zod.coerce.date()
+})
+
+
+/**
+ * @summary Delete one of the signed-in user's expenses
+ */
+export const deleteExpensePathIdMin = 24;
+export const deleteExpensePathIdMax = 24;
+
+
+
+export const DeleteExpenseParams = zod.object({
+  "id": zod.coerce.string().min(deleteExpensePathIdMin).max(deleteExpensePathIdMax)
+})
+
+export const DeleteExpenseResponse = zod.void()
+
+

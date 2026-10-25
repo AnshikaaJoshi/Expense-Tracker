@@ -63,6 +63,168 @@ paths:
           description: Invalid profile data
         "401":
           description: Authentication required
+  /expenses:
+    get:
+      operationId: listExpenses
+      tags: [expenses]
+      summary: List the signed-in user's expenses
+      security:
+        - clerkSessionCookie: []
+      parameters:
+        - name: from
+          in: query
+          required: false
+          schema:
+            type: string
+            pattern: "^[0-9]{4}-[0-9]{2}-[0-9]{2}$"
+        - name: to
+          in: query
+          required: false
+          schema:
+            type: string
+            pattern: "^[0-9]{4}-[0-9]{2}-[0-9]{2}$"
+        - name: category
+          in: query
+          required: false
+          schema:
+            $ref: "#/components/schemas/ExpenseCategory"
+        - name: search
+          in: query
+          required: false
+          schema:
+            type: string
+            maxLength: 100
+      responses:
+        "200":
+          description: Matching expenses, newest first
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Expense"
+        "400":
+          description: Invalid filter
+        "401":
+          description: Authentication required
+    post:
+      operationId: createExpense
+      tags: [expenses]
+      summary: Create an expense
+      security:
+        - clerkSessionCookie: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ExpenseInput"
+      responses:
+        "201":
+          description: Created expense
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Expense"
+        "400":
+          description: Invalid expense data
+        "401":
+          description: Authentication required
+  /expenses/summary:
+    get:
+      operationId: getExpenseSummary
+      tags: [expenses]
+      summary: Summarize the signed-in user's expenses
+      security:
+        - clerkSessionCookie: []
+      parameters:
+        - name: from
+          in: query
+          required: true
+          schema:
+            type: string
+            pattern: "^[0-9]{4}-[0-9]{2}-[0-9]{2}$"
+        - name: to
+          in: query
+          required: true
+          schema:
+            type: string
+            pattern: "^[0-9]{4}-[0-9]{2}-[0-9]{2}$"
+      responses:
+        "200":
+          description: Spending totals and chart series for the selected period
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ExpenseSummary"
+        "400":
+          description: Invalid date range
+        "401":
+          description: Authentication required
+  /expenses/{id}:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+          minLength: 24
+          maxLength: 24
+    get:
+      operationId: getExpense
+      tags: [expenses]
+      summary: Get one of the signed-in user's expenses
+      security:
+        - clerkSessionCookie: []
+      responses:
+        "200":
+          description: Expense
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Expense"
+        "401":
+          description: Authentication required
+        "404":
+          description: Expense not found
+    put:
+      operationId: updateExpense
+      tags: [expenses]
+      summary: Replace one of the signed-in user's expenses
+      security:
+        - clerkSessionCookie: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ExpenseInput"
+      responses:
+        "200":
+          description: Updated expense
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Expense"
+        "400":
+          description: Invalid expense data
+        "401":
+          description: Authentication required
+        "404":
+          description: Expense not found
+    delete:
+      operationId: deleteExpense
+      tags: [expenses]
+      summary: Delete one of the signed-in user's expenses
+      security:
+        - clerkSessionCookie: []
+      responses:
+        "204":
+          description: Expense deleted
+        "401":
+          description: Authentication required
+        "404":
+          description: Expense not found
 components:
   securitySchemes:
     clerkSessionCookie:
@@ -105,4 +267,106 @@ components:
           type: string
           maxLength: 240
       required: [displayName, bio]
+    ExpenseCategory:
+      type: string
+      enum:
+        - Food
+        - Transport
+        - Shopping
+        - Bills
+        - Health
+        - Entertainment
+        - Travel
+        - Other
+    Expense:
+      type: object
+      properties:
+        id:
+          type: string
+        description:
+          type: string
+          minLength: 1
+          maxLength: 120
+        amountCents:
+          type: integer
+          minimum: 1
+        category:
+          $ref: "#/components/schemas/ExpenseCategory"
+        spentOn:
+          type: string
+          pattern: "^[0-9]{4}-[0-9]{2}-[0-9]{2}$"
+        notes:
+          type: string
+          maxLength: 280
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+      required:
+        - id
+        - description
+        - amountCents
+        - category
+        - spentOn
+        - notes
+        - createdAt
+        - updatedAt
+    ExpenseInput:
+      type: object
+      properties:
+        description:
+          type: string
+          minLength: 1
+          maxLength: 120
+        amountCents:
+          type: integer
+          minimum: 1
+        category:
+          $ref: "#/components/schemas/ExpenseCategory"
+        spentOn:
+          type: string
+          pattern: "^[0-9]{4}-[0-9]{2}-[0-9]{2}$"
+        notes:
+          type: string
+          maxLength: 280
+      required: [description, amountCents, category, spentOn, notes]
+    MonthlyExpenseTotal:
+      type: object
+      properties:
+        month:
+          type: string
+          description: Calendar month in YYYY-MM format
+        totalCents:
+          type: integer
+      required: [month, totalCents]
+    CategoryExpenseTotal:
+      type: object
+      properties:
+        category:
+          $ref: "#/components/schemas/ExpenseCategory"
+        totalCents:
+          type: integer
+        count:
+          type: integer
+      required: [category, totalCents, count]
+    ExpenseSummary:
+      type: object
+      properties:
+        totalCents:
+          type: integer
+        expenseCount:
+          type: integer
+        averageCents:
+          type: number
+        byMonth:
+          type: array
+          items:
+            $ref: "#/components/schemas/MonthlyExpenseTotal"
+        byCategory:
+          type: array
+          items:
+            $ref: "#/components/schemas/CategoryExpenseTotal"
+      required: [totalCents, expenseCount, averageCents, byMonth, byCategory]
 

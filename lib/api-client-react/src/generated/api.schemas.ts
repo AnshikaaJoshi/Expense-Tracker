@@ -26,3 +26,97 @@ export interface ProfileInput {
   bio: string;
 }
 
+export type ExpenseCategory = typeof ExpenseCategory[keyof typeof ExpenseCategory];
+
+
+export const ExpenseCategory = {
+  Food: 'Food',
+  Transport: 'Transport',
+  Shopping: 'Shopping',
+  Bills: 'Bills',
+  Health: 'Health',
+  Entertainment: 'Entertainment',
+  Travel: 'Travel',
+  Other: 'Other',
+} as const;
+
+export interface Expense {
+  id: string;
+  /**
+     * @minLength 1
+     * @maxLength 120
+     */
+  description: string;
+  /** @minimum 1 */
+  amountCents: number;
+  category: ExpenseCategory;
+  /** @pattern ^[0-9]{4}-[0-9]{2}-[0-9]{2}$ */
+  spentOn: string;
+  /** @maxLength 280 */
+  notes: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface ExpenseInput {
+  /**
+     * @minLength 1
+     * @maxLength 120
+     */
+  description: string;
+  /** @minimum 1 */
+  amountCents: number;
+  category: ExpenseCategory;
+  /** @pattern ^[0-9]{4}-[0-9]{2}-[0-9]{2}$ */
+  spentOn: string;
+  /** @maxLength 280 */
+  notes: string;
+}
+
+export interface MonthlyExpenseTotal {
+  /** Calendar month in YYYY-MM format */
+  month: string;
+  totalCents: number;
+}
+
+export interface CategoryExpenseTotal {
+  category: ExpenseCategory;
+  totalCents: number;
+  count: number;
+}
+
+export interface ExpenseSummary {
+  totalCents: number;
+  expenseCount: number;
+  averageCents: number;
+  byMonth: MonthlyExpenseTotal[];
+  byCategory: CategoryExpenseTotal[];
+}
+
+export type ListExpensesParams = {
+/**
+ * @pattern ^[0-9]{4}-[0-9]{2}-[0-9]{2}$
+ */
+from?: string;
+/**
+ * @pattern ^[0-9]{4}-[0-9]{2}-[0-9]{2}$
+ */
+to?: string;
+category?: ExpenseCategory;
+/**
+ * @maxLength 100
+ */
+search?: string;
+};
+
+export type GetExpenseSummaryParams = {
+/**
+ * @pattern ^[0-9]{4}-[0-9]{2}-[0-9]{2}$
+ */
+from: string;
+/**
+ * @pattern ^[0-9]{4}-[0-9]{2}-[0-9]{2}$
+ */
+to: string;
+};
+
