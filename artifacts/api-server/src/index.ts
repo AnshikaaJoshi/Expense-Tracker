@@ -22,10 +22,9 @@ async function start(): Promise<void> {
     app.listen(port, () => {
       logger.info({ port }, "Server listening");
     });
-  } catch (error) {
+  } catch {
     logger.error(
-      { error: error instanceof Error ? error.message : "Unknown startup error" },
-      "Could not start API server",
+      "Could not start API server; verify MongoDB settings and network access",
     );
     process.exit(1);
   }
